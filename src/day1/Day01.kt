@@ -1,10 +1,10 @@
 package day1
 
-import readInput
+import java.io.File
 
 fun main() {
 
-    val d = Day01(readInput("Day01"))
+    val d = Day01(File("src/day1/Day01.txt").readLines())
     println(d.solvedPart1())
     println(d.solvedPart2())
 }
