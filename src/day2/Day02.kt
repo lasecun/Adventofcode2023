@@ -4,12 +4,12 @@ import java.io.File
 
 fun main() {
 
-    val d = Day01(File("src/day2/Day02.txt").readLines())
+    val d = Day02(File("src/day2/Day02_test.txt").readLines())
     println(d.solvedPart1())
     println(d.solvedPart2())
 }
 
-class Day01(private val input: List<String>) {
+class Day02(private val input: List<String>) {
 
     fun solvedPart1(): Int {
         var total = 0
@@ -39,7 +39,7 @@ class Day01(private val input: List<String>) {
 
     fun solvedPart2(): Int {
         var solution = 0
-        input.forEachIndexed { index, s ->
+        input.forEach { s ->
             val games = s.split(":")
             val turn = games[1].split(";")
             val targetList: MutableList<Pair<Int, String>> = mutableListOf()
