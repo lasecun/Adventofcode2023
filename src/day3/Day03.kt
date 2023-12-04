@@ -4,7 +4,7 @@ import java.io.File
 
 fun main() {
 
-    val d = Day03(File("src/day3/Day03.txt").readLines())
+    val d = Day03(File("src/day3/Day03_test.txt").readLines())
     println(d.solvedPart1())
     println(d.solvedPart2())
 }
