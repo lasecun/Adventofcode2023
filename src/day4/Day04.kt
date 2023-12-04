@@ -10,46 +10,28 @@ fun main() {
     println(d.solvedPart2())
 }
 
-private val NUMBER_REGEX = "\\d+".toRegex()
 const val BASE_WORTH: Double = 2.0
 
 class Day04(private val input: List<String>) {
     fun solvedPart1(): Int {
-        var total = 0
-        input.forEach { line ->
-            val card = line.split(":")
-            val cardNumbers = card[1].split("|")
+        val cards = input.toCards()
+        return cards.sumOf { card ->
             var totalWins = 0
 
-            // Get the list of winning numbers
-            val winningGroup = cardNumbers[0]
-            val winningList: MutableList<Int> = mutableListOf()
-            NUMBER_REGEX.findAll(winningGroup).forEach {
-                winningList.add(it.value.toInt())
-            }
-
-            // Get the list of elf numbers
-            val elfNumbers = cardNumbers[1]
-            val elfNumberList: MutableList<Int> = mutableListOf()
-            NUMBER_REGEX.findAll(elfNumbers).forEach {
-                elfNumberList.add(it.value.toInt())
-            }
-
-            winningList.forEach {
-                if (findInAList(elfNumberList, it)) {
+            card.winNumbers.forEach {
+                if (findInAList(card.elfNumbers.toList(), it)) {
                     totalWins++
                 }
             }
-            total += calculateWorth(totalWins)
+            calculateWorth(totalWins)
         }
-        return total
     }
 
     private fun calculateWorth(totalWins: Int): Int {
         return BASE_WORTH.pow(totalWins - 1).toInt()
     }
 
-    private fun findInAList(list: List<Int>, value: Int): Boolean {
+    private fun findInAList(list: List<Long>, value: Long): Boolean {
         return list.any { it == value }
     }
 
@@ -57,7 +39,7 @@ class Day04(private val input: List<String>) {
         val cardCopies = mutableMapOf<Int, Long>()
         val cards = input.toCards()
         return cards.sumOf { card ->
-            val winPoints = card.winNumbers.intersect(card.ownNumbers).count()
+            val winPoints = card.winNumbers.intersect(card.elfNumbers).count()
             val times = 1 + cardCopies.getOrDefault(card.num, 0)
             for (nextCardNum in card.num + 1..(card.num + winPoints).coerceAtMost(cards.size)) {
                 cardCopies.merge(nextCardNum, times) { value, current -> value + current }
@@ -66,7 +48,7 @@ class Day04(private val input: List<String>) {
         }
     }
 
-    data class Card(val num: Int, val winNumbers: Set<Long>, val ownNumbers: Set<Long>)
+    data class Card(val num: Int, val winNumbers: Set<Long>, val elfNumbers: Set<Long>)
 
     private fun List<String>.toCards(): List<Card> =
         map { line ->
@@ -74,7 +56,7 @@ class Day04(private val input: List<String>) {
             Card(
                 num = parts[0].split(" ").last().toInt(),
                 winNumbers = parts[1].split(" ").filter { it.isNotBlank() }.map { it.toLong() }.toSet(),
-                ownNumbers = parts[2].split(" ").filter { it.isNotBlank() }.map { it.toLong() }.toSet()
+                elfNumbers = parts[2].split(" ").filter { it.isNotBlank() }.map { it.toLong() }.toSet()
             )
         }
 }
