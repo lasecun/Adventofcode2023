@@ -5,12 +5,13 @@ import kotlin.math.pow
 
 fun main() {
 
-    val d = Day04(File("src/day4/Day04.txt").readLines())
+    val d = Day04(File("src/day4/Day04_test.txt").readLines())
     println(d.solvedPart1())
     println(d.solvedPart2())
 }
 
 private val NUMBER_REGEX = "\\d+".toRegex()
+const val BASE_WORTH: Double = 2.0
 
 class Day04(private val input: List<String>) {
     fun solvedPart1(): Int {
@@ -45,15 +46,35 @@ class Day04(private val input: List<String>) {
     }
 
     private fun calculateWorth(totalWins: Int): Int {
-        val baseWorth = 2
-        return (baseWorth).toDouble().pow(totalWins - 1).toInt()
+        return BASE_WORTH.pow(totalWins - 1).toInt()
     }
 
     private fun findInAList(list: List<Int>, value: Int): Boolean {
         return list.any { it == value }
     }
 
-    fun solvedPart2(): Int {
-        return 2
+    fun solvedPart2(): Long {
+        val cardCopies = mutableMapOf<Int, Long>()
+        val cards = input.toCards()
+        return cards.sumOf { card ->
+            val winPoints = card.winNumbers.intersect(card.ownNumbers).count()
+            val times = 1 + cardCopies.getOrDefault(card.num, 0)
+            for (nextCardNum in card.num + 1..(card.num + winPoints).coerceAtMost(cards.size)) {
+                cardCopies.merge(nextCardNum, times) { value, current -> value + current }
+            }
+            times
+        }
     }
+
+    data class Card(val num: Int, val winNumbers: Set<Long>, val ownNumbers: Set<Long>)
+
+    private fun List<String>.toCards(): List<Card> =
+        map { line ->
+            val parts = line.split(':', '|').map { it.trim() }
+            Card(
+                num = parts[0].split(" ").last().toInt(),
+                winNumbers = parts[1].split(" ").filter { it.isNotBlank() }.map { it.toLong() }.toSet(),
+                ownNumbers = parts[2].split(" ").filter { it.isNotBlank() }.map { it.toLong() }.toSet()
+            )
+        }
 }
