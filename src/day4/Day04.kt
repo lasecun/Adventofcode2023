@@ -8,6 +8,7 @@ fun main() {
     val d = Day04(File("src/day4/Day04_test.txt").readLines())
     println(d.solvedPart1())
     println(d.solvedPart2())
+    println(d.solvePart2())
 }
 
 const val BASE_WORTH: Double = 2.0
@@ -46,6 +47,34 @@ class Day04(private val input: List<String>) {
             }
             times
         }
+    }
+
+
+    fun solvePart2(): Int {
+        val cardMatches = input.map { parseCard(it) }
+
+        val cards = IntArray(cardMatches.size) { 1 }
+        cardMatches.forEachIndexed { index, score ->
+            repeat(score) {
+                cards[index+it+1] += cards[index]
+            }
+        }
+        return cards.sum()
+    }
+
+    private fun parseCard(input: String): Int {
+        val winningNumbers = input.substringAfter(":")
+            .substringBefore("|")
+            .split(" ")
+            .filter { it.isNotEmpty() }
+            .toSet()
+
+        val ourNumbers = input.substringAfter("|")
+            .split(" ")
+            .filter { it.isNotEmpty() }
+            .toSet()
+
+        return winningNumbers.intersect(ourNumbers).size
     }
 
     data class Card(val num: Int, val winNumbers: Set<Long>, val elfNumbers: Set<Long>)
