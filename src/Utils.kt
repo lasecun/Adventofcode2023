@@ -19,3 +19,11 @@ fun String.md5() = BigInteger(1, MessageDigest.getInstance("MD5").digest(toByteA
  * The cleaner shorthand for printing output.
  */
 fun Any?.println() = println(this)
+
+fun gcd(x: Long, y: Long): Long {
+    var a = x
+    var b = y
+    while (b != 0L) a = b.also { b = a.mod(b) }
+    return a
+}
+fun lcm(x: Long, y: Long): Long = x / gcd(x, y) * y
